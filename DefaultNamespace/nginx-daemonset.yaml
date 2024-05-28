@@ -1,0 +1,23 @@
+# Create an nginx pod on every node of Kubernetes cluster, if a new node added 
+# to the cluster this pod should automatically be added on that node as well.
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: nginx-daemonset
+  labels:
+    app: nginx
+spec:
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:latest
+        ports:
+        - containerPort: 80
