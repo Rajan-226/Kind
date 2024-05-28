@@ -1,3 +1,13 @@
+# Deploy a Pod which serves a static file. The static file should be created when the Pod starts (init container). 
+# The pod is able to serve traffic only if the file exists. Gets restarted if the file is deleted. 
+# Also, configure liveness and readiness probes
+
+# 1. Spin up the pod by applying this yaml file by kubectl apply -f "file's relative path"
+# 2. Exec inside the pod and cd to /usr/share/nginx/html
+# 3. Ensure by ls to see index.html file is present and cat index.html to see the content
+# 4. rm index.html to delete the file, ensure by ls if file is deleted
+# 5. Do ls after 30 seconds, index.html file will automatically be created by sidecar container file-checker
+
 apiVersion: v1
 kind: Pod
 metadata:
@@ -25,6 +35,12 @@ spec:
         port: 80
       initialDelaySeconds: 5
       periodSeconds: 10
+  - name: file-checker
+    image: busybox
+    command: ['sh', '-c', 'while true; do if [ ! -f /usr/share/nginx/html/index.html ]; then echo "Hello, Kubernetes from sidecar container!" > /usr/share/nginx/html/index.html; fi; sleep 30; done']
+    volumeMounts:
+    - name: shared-data
+      mountPath: /usr/share/nginx/html
   initContainers:
   - name: init-static-file
     image: busybox

@@ -1,0 +1,50 @@
+# Deploy a Pod which serves a static file. The static file should be created when the Pod starts (init container). 
+# The pod is able to serve traffic only if the file exists. Gets restarted if the file is deleted. 
+# Also, configure liveness and readiness probes
+
+# TODO: Figure out why pod is not getting restarted even with deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: static-file-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: static-file-server
+  template:
+    metadata:
+      labels:
+        app: static-file-server
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:alpine
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+        livenessProbe:
+          httpGet:
+            path: /index.html
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /index.html
+            port: 80
+          initialDelaySeconds: 5
+          periodSeconds: 10
+      initContainers:
+      - name: init-static-file
+        image: busybox
+        command: ['sh', '-c', 'echo "Hello, Kubernetes!" > /usr/share/nginx/html/index.html']
+        volumeMounts:
+        - name: shared-data
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: shared-data
+        emptyDir: {}
