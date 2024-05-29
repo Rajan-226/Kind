@@ -1,0 +1,27 @@
+# Run an nginx pod, upgrade the image tag to (latest-not-available) that would break the pod.
+# Now rollback that upgrade to revert the changes. Hint: Use rollout to see and revert the changes.
+
+# 1. Create the deployment either using yaml or kubectl create deployment nginx --image=nginx:stable
+# 2. kubectl set image deployment/nginx nginx=nginx:latest-not-available or edit deployment manually
+# 3. kubectl rollout status deployment/nginx to check status of deployment - it will get attached to terminal
+# 4. kubectl rollout undo deployment/nginx for reverting the deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:stable
+        ports:
+        - containerPort: 80
