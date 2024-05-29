@@ -1,6 +1,8 @@
 # Create an nginx pod on every node of Kubernetes cluster, if a new node added 
 # to the cluster this pod should automatically be added on that node as well.
 
+# Daemonset: Ensures all nodes run a copy of pod
+
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
