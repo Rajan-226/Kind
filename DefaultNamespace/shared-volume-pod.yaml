@@ -1,0 +1,26 @@
+# Deploy a pod with two containers, one container should write some data (date let's say) 
+# to the volume and another container should read that data from volume and display it.
+
+# Writer container is writing a file to the volume and reader container is reading from it
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shared-volume
+spec:
+  containers:
+  - name: writer
+    image: busybox
+    command: ["/bin/sh", "-c", "while true; do date > /write/data/date.txt; sleep 5; done"]
+    volumeMounts:
+    - name: shared-data
+      mountPath: /write/data  # Directories will automatically get created in container if not present
+  - name: reader
+    image: busybox
+    command: ["/bin/sh", "-c", "while true; do cat /read/data/date.txt; sleep 5; done"]
+    volumeMounts:
+    - name: shared-data
+      mountPath: /read/data
+  volumes:
+  - name: shared-data
+    emptyDir: {}
