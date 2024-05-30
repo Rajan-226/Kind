@@ -1,0 +1,19 @@
+# Create a pod that uses hostPath as volume
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hostpath-pod
+spec:
+  containers:
+  - name: my-container
+    image: busybox
+    command: ["sh", "-c", "echo \"Hello Kubernetes Node!! I\'m pod which is running inside you\" > /mnt/host-data/hello.txt"]
+    volumeMounts:
+    - name: hostpath-volume
+      mountPath: /mnt/host-data  # Mount path inside the container
+  volumes:
+  - name: hostpath-volume
+    hostPath:
+      path: /var/log  # Path on the host node you want to mount
+      type: Directory  # Specify the type of hostPath (Directory, File, etc.)
