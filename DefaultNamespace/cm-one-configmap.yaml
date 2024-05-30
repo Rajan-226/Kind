@@ -1,0 +1,9 @@
+# Create a configmap cm-one with key name and set environment variable envname
+# in a pod with value to the value that is set in configmap (cm-one) for key name.
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cm-one
+data:
+  name: "value_from_configmap"

@@ -1,0 +1,20 @@
+# Create a configmap cm-one with key name and set environment variable envname
+# in a pod with value to the value that is set in configmap (cm-one) for key name.
+
+# 1. Create configmap by kubectl apply -f cm-one.yaml
+# 2. Run the pod using this configmap
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: configmap-usage
+spec:
+  containers:
+    - name: my-container
+      image: nginx:latest 
+      env:
+        - name: envname
+          valueFrom:
+            configMapKeyRef:
+              name: cm-one
+              key: name
