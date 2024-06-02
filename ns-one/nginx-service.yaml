@@ -1,0 +1,17 @@
+# Create an nginx deployment, expose it using service and then run another pod
+# in the same namespace to access that nginx service
+
+# curl http://nginx-service or curl cluster_ip_of_service_created:80 from the another pod
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  namespace: ns-one
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
