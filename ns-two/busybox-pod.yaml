@@ -1,7 +1,8 @@
 # Create an nginx deployment (in namespace ns-one), expose it using service and 
 # then run another pod in another namespace (ns-two) to access that nginx service.
 
-# ns-two cannot access pod in ns-one
+# ns-two cannot access pod in ns-one by curl http://nginx-service - it doesn't work across namespace
+# but curl http://nginx-service.ns-one.svc.cluster.local works as it's allowed
 
 apiVersion: v1
 kind: Pod
