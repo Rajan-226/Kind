@@ -1,3 +1,11 @@
+# Deploy a pod (kanisterio/kanister-kubectl:1.18) in default namespace and from that pod
+# you should be able to list all the pods from kube-system namespace.
+
+# 1. Create kanister-serviceaccount which will be used in this pod to give the pod indetity of a user
+# 2. Create a cluster role giving necessary permission of getting pods
+# 3. Create a cluster role binding to bind service account and cluster role created
+# 4. Create this pod and exec into it to check if kubectl get pods -n kube-system is working
+
 apiVersion: v1
 kind: Pod
 metadata:
