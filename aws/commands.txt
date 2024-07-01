@@ -1,0 +1,36 @@
+aws ec2 create-key-pair --key-name coral-testec2-key --query 'KeyMaterial' --output text > YourNewKeyPair.pem
+
+aws ec2 run-instances     --image-id ami-0b00f5183519c196c     --count 1     --instance-type t3.medium     --key-name coral-testec2-key     --security-group-ids sg-0e753fd5550206e55     --subnet-id subnet-ee8cac86     --region us-east-2
+ 
+aws ec2 describe-instances --instance-ids i-0a564893428ee1c8f --query 'Reservations[0].Instances[0].PublicIpAddress' --output text
+
+ssh -i YourNewKeyPair.pem ubuntu@3.144.253.51
+
+docker version
+
+curl https://releases.rancher.com/install-docker/<version-number>.sh | sh
+
+sudo usermod -aG docker ubuntu
+
+docker run -d --restart=unless-stopped \
+  -p 80:80 -p 443:443 \
+  --privileged \
+  rancher/rancher:latest
+
+
+
+
+
+
+
+resize:
+
+aws ec2 stop-instances --instance-ids i-0a564893428ee1c8f --region us-east-2
+
+aws ec2 describe-instances --instance-ids i-0a564893428ee1c8f --query 'Reservations[*].Instances[*].[InstanceId,State.Name]' --output table
+
+aws ec2 modify-instance-attribute --instance-id i-0a564893428ee1c8f --instance-type t3.medium --region us-east-2
+
+aws ec2 start-instances --instance-ids i-0a564893428ee1c8f --region us-east-2
+
+
