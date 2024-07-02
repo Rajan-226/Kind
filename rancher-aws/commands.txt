@@ -1,0 +1,78 @@
+----------------
+
+Run rancher server on a AWS node:
+
+
+aws ec2 create-key-pair --key-name coral-testec2-key --query 'KeyMaterial' --output text > YourNewKeyPair.pem
+
+aws ec2 run-instances --image-id ami-0b00f5183519c196c --count 1 --instance-type t3.medium --key-name coral-testec2-key --security-group-ids sg-0e753fd5550206e55 --subnet-id subnet-ee8cac86 --region us-east-2
+ 
+aws ec2 describe-instances --instance-ids i-0a564893428ee1c8f --query 'Reservations[0].Instances[0].PublicIpAddress' --output text
+
+ssh -i YourNewKeyPair.pem ubuntu@3.144.253.51
+
+docker version
+
+curl https://releases.rancher.com/install-docker/<version-number>.sh | sh
+
+sudo usermod -aG docker ubuntu
+
+docker run -d --restart=unless-stopped \
+  -p 80:80 -p 443:443 \
+  --privileged \
+  rancher/rancher:latest
+
+
+
+
+
+---------------
+
+
+Resize a AWS node:
+
+aws ec2 stop-instances --instance-ids i-0a564893428ee1c8f --region us-east-2
+
+aws ec2 describe-instances --instance-ids i-0a564893428ee1c8f --query 'Reservations[*].Instances[*].[InstanceId,State.Name]' --output table
+
+aws ec2 modify-instance-attribute --instance-id i-0a564893428ee1c8f --instance-type t3.medium --region us-east-2
+
+aws ec2 start-instances --instance-ids i-0a564893428ee1c8f --region us-east-2
+
+
+
+
+--------------
+
+Standalone RKE:
+
+Setup 3 aws nodes, each having all 3 roles
+
+  aws ec2 run-instances   --image-id ami-0b00f5183519c196c   --count 3   --instance-type t3.medium   --key-name coral-testec2-key   --security-group-ids sg-0e753fd5550206e55   --subnet-id subnet-ee8cac86   --region us-east-2   --tag-specifications 'ResourceType=instance,Tags=[{Key=Name,Value=test-rke-standalone}]'
+
+  aws ec2 describe-instances   --filters "Name=tag:Name,Values=test-rke-standalone"   --query 'Reservations[*].Instances[*].[InstanceId,PrivateIpAddress,PublicIpAddress]'   --region us-east-2
+
+Install rke as executable
+
+  1. Download suitable released binary for your OS from https://github.com/rancher/rke/releases
+  2. Give it executable permission: chmod +x rke_linux-amd64
+  3. Move it to PATH: sudo mv rke_linux-amd64 /usr/local/bin/rke
+  4. rke config --list-version --all - for supported k8s version for cluster yml file
+
+Create cluster
+
+  1. Create cluster config: https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-cluster-setup/rke1-for-rancher#1-create-the-cluster-configuration-file
+  2. rke up --config cluster.yaml
+
+
+Use following for rancher server setup on the cluster:
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/install-upgrade-on-a-kubernetes-cluster
+
+Use following for cert-manager setup:
+https://artifacthub.io/packages/helm/cert-manager/cert-manager#installing-the-chart
+
+
+
+
+
+

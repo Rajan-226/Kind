@@ -1,0 +1,29 @@
+nodes:
+  - address: 3.138.106.117         # Public IP
+    internal_address: 172.31.1.177 # Internal IP
+    user: ubuntu
+    role: [controlplane, etcd, worker]
+    ssh_key_path: YourNewKeyPair.pem
+  - address: 3.144.82.24           # Public IP
+    internal_address: 172.31.12.132 # Internal IP
+    user: ubuntu
+    role: [controlplane, etcd, worker]
+    ssh_key_path: YourNewKeyPair.pem
+  - address: 3.141.25.178          # Public IP
+    internal_address: 172.31.6.228  # Internal IP
+    user: ubuntu
+    role: [controlplane, etcd, worker]
+    ssh_key_path: YourNewKeyPair.pem
+
+services:
+  etcd:
+    snapshot: true
+    creation: 6h
+    retention: 24h
+
+ingress:
+  provider: nginx
+  options:
+    use-forwarded-headers: "true"
+
+kubernetes_version: "v1.28.10-rancher1-1"
